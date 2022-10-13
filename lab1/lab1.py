@@ -1,6 +1,4 @@
 import random
-from types import NoneType
-
 from search import tree_explorer_DF
 
 def problem(N, seed=None):
