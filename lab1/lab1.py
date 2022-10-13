@@ -1,5 +1,6 @@
 from copy import copy
 import random
+from types import NoneType
 import numpy as np
 
 def problem(N, seed=None):
@@ -29,24 +30,22 @@ def tree_explorer(sol, space, N):
     local_s = copy(sol)
     isCorrect = check_solution(sol, N)
     if  len(local_s) != 0 and len(local_s[-1]) <= isCorrect[2]: #controllo che il numero di collisioni sia minore della lunghezza della lista
-        local_s.pop(-1)
+        sol.pop(-1)
     if isCorrect[0]:
         return isCorrect
     for l in space:
         local_s.append(l)
         ind_l = space.index(l)
         ctrl = tree_explorer(local_s, space[ind_l+1 : ], N)
-        if ctrl[0]:
+        if ctrl is not None and ctrl[0]:
             return ctrl
 
 if __name__ == "__main__":
     seed = 42
     for N in [5, 10, 20, 100, 500, 1000]:
-    #N = 5
         space = problem(N, seed)
         space.sort(key=len, reverse=True)
-        solution = []
         solution = tree_explorer([], space, N)
-        print(f"Solution for {N}: {solution}")
+        print(f"Solution for {N}: {len(solution[1])}")
 
 
