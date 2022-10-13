@@ -1,7 +1,5 @@
-from concurrent.futures.process import _threads_wakeups
 from copy import copy
 import random
-from threading import local
 import numpy as np
 
 def problem(N, seed=None):
