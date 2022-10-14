@@ -30,3 +30,7 @@ def tree_explorer_DF(sol, space, N):
         ctrl = tree_explorer_DF(local_s, space[ind_l+1 : ], N)
         if ctrl is not None and ctrl[0]:
             return ctrl
+
+def tree_explorer_BF(sol, space, N):
+
+    return
