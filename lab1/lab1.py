@@ -1,5 +1,5 @@
 import random
-from search import tree_explorer_DF, tree_explorer_BF
+import search
 
 def problem(N, seed=None):
     random.seed(seed)
@@ -13,13 +13,13 @@ if __name__ == "__main__":
     for N in [5, 10, 20, 100, 500, 1000]:
         space = problem(N, seed)
         space.sort(key=len, reverse=True)
-        solution = tree_explorer_DF([], space, N)
+        solution = search.tree_explorer_DF([], space, N)
         print(f"Possible solution for {N}: {len(solution[1])}")
     
     for N in [5, 10, 20, 100, 500, 1000]:
         space = problem(N, seed)
         space.sort(key=len, reverse=True)
-        solution = tree_explorer_BF(space, N)
+        solution = search.tree_explorer_BF(space, N)
         print(f"Optimal solution for {N}: {len(solution[1])}")
 
 
