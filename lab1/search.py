@@ -20,37 +20,19 @@ def check_solution(solution, N):
     else:
         return (True, solution, np.sum(collision))
 
-
-def tree_explorer_DF(sol, space, N):
-    """ Function that check if exists at least a solution, but not guarantees it is the best one """
-    local_s = copy(sol)
-    isCorrect = check_solution(sol, N)
-    if  len(local_s) != 0 and len(local_s[-1]) <= isCorrect[2]: # check number of collision less or equal of list's length
-        sol.pop(-1)
-    if isCorrect[0]:
-        return isCorrect
-    for l in space:
-        local_s.append(l) # adding a new element in the possible solution
-
-        global nodes
-        nodes += 1
-
-        ind_l = space.index(l)
-        ctrl = tree_explorer_DF(local_s, space[ind_l+1 : ], N)
-        if ctrl is not None and ctrl[0]:
-            if nodes != 0:
-                print(f"Visited nodes with partial DF: {nodes}")
-                nodes = 0
-            return ctrl
-
 def tree_explorer_BF(space, N):
     """ Function that produce the best solution. It can be computationally too massive """
     nodes = 0
-    for i in range(N):
+    solution = []
+    for i in range(1,N):
         for e in combinations(space, i): # create every possible combination of element using i elements
             nodes += 1
             isCorrect = check_solution(e, N)
             if isCorrect[0]:
-                print(f"Visited nodes with BF: {nodes}")
-                return isCorrect #if the solution is correct, it's also the best solution, because is the first I can find with minimum length
+                if len(solution) == 0 or sum(len(e) for e in solution[1]) > sum(len(e) for e in isCorrect[1]):
+                    print(isCorrect)
+                    solution = isCorrect
+    if len(solution) != 0:
+        print(f"Visited nodes with BF: {nodes}")
+        return solution
     return (False, [], 0)
