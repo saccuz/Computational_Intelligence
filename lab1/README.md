@@ -20,9 +20,9 @@ Due to the too high process time, the solution has been calculated only for $N$ 
 
 |$N$|Nodes Processed|Number of Elements in $L_{s_i}$ |
 |---|---|---|
-|5|2300|5|
-|10|19600|10|
-|20|278256|23|
+|5|2625|5|
+|10|20875|10|
+|20|331211|23|
 |100|-|-|
 |500|-|-|
 |1000|-|-|

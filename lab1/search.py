@@ -33,7 +33,8 @@ def tree_explorer_BF(space, N):
         if level != 0 and level+1 <= i:
             break
     if len(solution) != 0:
-        logging.debug(f"Visited nodes with BF: {nodes[-2]}")
+        nodes.pop(-1)
+        logging.debug(f"Visited nodes with BF: {sum(nodes)}")
         return solution
     return (False, [])
 
