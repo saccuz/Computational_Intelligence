@@ -1,5 +1,6 @@
 import random
 import search
+import logging
 
 def problem(N, seed=None):
     random.seed(seed)
@@ -10,7 +11,13 @@ def problem(N, seed=None):
 
 if __name__ == "__main__":
     seed = 42
-   
+    
+    for N in [5,10,20,100,500,1000]:
+        space = problem(N,seed)
+        space.sort(key=len)
+        solution = search.greedy_search(space, N)
+        logging.info(f"Existing solution for {N}: {len(solution)} with {sum(len(e) for e in solution)} elements")
+
     for N in [5, 10, 20, 100, 500, 1000]:
         space = problem(N, seed)
         space.sort(key=len)
