@@ -56,7 +56,6 @@ def fitness(genome, space):
     for e in sol:
         check_set |= set(e)
     how_many_covered = len(check_set)
-    #fit= -((collisions_)*0.1 + (N - how_many_covered)*0.9)  # da RIVEDERE, come dai più priorità al numero di numeri coperti?
     fit = (how_many_covered, -collisions_)
     return fit
 
