@@ -5,9 +5,9 @@ import numpy as np
 
 logging.basicConfig(format="%(message)s", level=logging.INFO)
 
-NUM_GENERATIONS = 1000
+NUM_GENERATIONS = 5000
 
-N= 100
+N = 100
 
 POPULATION_SIZE = 70        #100 o 70
 OFFSPRING_SIZE =  70        #40
