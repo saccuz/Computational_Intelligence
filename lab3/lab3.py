@@ -7,10 +7,11 @@ from nim import Nim, Strategy
     #tmp = np.array([tuple(int(x) for x in f"{c:032b}") for c in state.rows])
     #xor = tmp.sum(axis=0) % 2
     #return int("".join(str(_) for _ in xor), base=2)
-
+GENERATIONS = 100
 NUM_MATCHES = 100
 NIM_SIZE=10
-GENM_SIZE = 4
+GENM_SIZE = 2
+RESULT_TRESH = .3
 EVOL_STEP = .05
 
 def generate_individual(genome: list) -> list:
@@ -30,29 +31,30 @@ def make_strategy(dna: list) -> Strategy:
     return Strategy(used_tactics)
 
 def evolve_genome(dna: list, results: float, genome: list) -> None:
-    if results >= .5:
-        for loc, _ in zip(dna, range(len(dna))):
-            genome[loc] += EVOL_STEP
+    if results >= RESULT_TRESH:
+        for i in range(len(genome)):
+            if i in dna:
+                genome[i] += EVOL_STEP
+            else:
+                genome[i] -= EVOL_STEP/2
+                # if genome[i] < 0:
+                #     genome[i] = .1
+        # for loc, _ in zip(dna, range(len(dna))):
+        #     genome[loc] += EVOL_STEP
     
     else:
-        for loc, _ in zip(dna, range(len(dna))):
-            if genome[loc] > 0:
-                genome[loc] -= EVOL_STEP
+        for i in range(len(genome)):
+            if i in dna:
+                genome[i] -= EVOL_STEP
+                # if genome[i] < 0:
+                #     genome[i] = .1
+            else:
+                genome[i] += EVOL_STEP
 
-# def evaluate(strategy: Callable) -> float:
-#     opponent = (strategy, nim.optimal_strategy)
-#     won = 0
-
-#     for m in range(NUM_MATCHES):
-#         nim = Nim(NIM_SIZE)
-#         player = 0
-#         while nim:
-#             ply = opponent[player](nim)
-#             nim.nimming(ply)
-#             player = 1 - player
-#         if player == 1:
-#             won += 1
-#     return won/NUM_MATCHES
+        # for loc, _ in zip(dna, range(len(dna))):
+        #     genome[loc] -= EVOL_STEP
+        #     if genome[loc] < 0:
+        #         genome[loc] = .1
 
 def evaluate_with_average(strategy: Strategy) -> float:
     won = 0
@@ -63,27 +65,37 @@ def evaluate_with_average(strategy: Strategy) -> float:
         while board:
             if i % 2 != 0:
                 opponent = strategy.move()
+                player = 0
             else:
                 opponent = nim.opponent_strategy()
+                player = 1
             ply = opponent(board)
             board.nimming(ply)
-            player = 1 - player
             i+=1
-        if player == 1:
+        if player == 0:
             won += 1
     return won/NUM_MATCHES
 
 
 if __name__ == "__main__":
-
+    mean_ = 0
+    win = 0
+    lose = 0
     genome = [.5]*len(nim.tactics)
-    for generation in range(100):
+    for generation in range(GENERATIONS):
         individual = generate_individual(genome)
         results = evaluate_with_average(make_strategy(individual))
         print(results)
+        mean_ += results
+        if results > .5:
+            win += 1
+        else:
+            lose += 1
         evolve_genome(individual, results, genome)
     for x in zip(nim.tactics,genome):
         print(x[0].__name__, x[1])
+    print(f"mean: {mean_/GENERATIONS}")
+    print(f"victory: {win/GENERATIONS *100}%")
 
 
 

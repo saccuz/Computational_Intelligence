@@ -121,10 +121,10 @@ def opponent_strategy():
     global opponent_turn
     if opponent_turn % 2 == 0:
         opponent_turn += 1
-        return optimal_strategy
+        return shortest_row #better with gabriele
     else:
         opponent_turn += 1
-        return pure_random
+        return longest_row
 
 def strategy_genome(allele: int):
     return tactics[allele]
