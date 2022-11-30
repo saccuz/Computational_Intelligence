@@ -57,8 +57,8 @@ def cook_status(state: Nim) -> dict:
     cooked = dict()
     cooked['possible_moves'] = [(r, o) for r, c in enumerate(state.rows) for o in range(1, c + 1) if state.k is None or o <= state.k]
     cooked['active_rows_number'] = sum(o > 0 for o in state.rows)
-    cooked['even_object_rows'] = [x for x in enumerate(state.rows) if x[1] % 2 == 0]
-    cooked['odd_object_rows'] = [x for x in enumerate(state.rows) if x[1] % 2 != 0]
+    cooked['even_object_rows'] = [x[0] for x in enumerate(state.rows) if x[1] % 2 == 0 and x[1] != 0]
+    cooked['odd_object_rows'] = [x[0] for x in enumerate(state.rows) if x[1] % 2 != 0]
     cooked['shortest_row'] = min((x for x in enumerate(state.rows) if x[1] > 0), key=lambda y:y[1])[0]
     cooked['longest_row'] = max((x for x in enumerate(state.rows)), key=lambda y:y[1])[0]
     cooked['nim_sum'] = nim_sum(state)
@@ -106,22 +106,28 @@ def pick_one_from_min(state: Nim) -> Nimply:
 def pick_even_max(state: Nim) -> Nimply:
     data = cook_status(state)
     info = data['even_object_rows'] if data['even_object_rows'] != [] else data['odd_object_rows']
-    row_ = max(info, key=lambda x: x[1])[0]
+    row_ = max(info, key=lambda x: x)
     return Nimply(row_, (state.rows[row_]//2)+1)
 
 def pick_odd_max(state: Nim) -> Nimply:
     data = cook_status(state)
     info = data['odd_object_rows'] if data['odd_object_rows'] != [] else data['even_object_rows']
-    row_ = max(info, key=lambda x: x[1])[0]
+    row_ = max(info, key=lambda x: x)
     return Nimply(row_, state.rows[row_]//2)
 
-def opponent_strategy(turn: int):
-    if turn % 2 == 0:
+opponent_turn = 0
+
+def opponent_strategy():
+    global opponent_turn
+    if opponent_turn % 2 == 0:
+        opponent_turn += 1
         return optimal_strategy
     else:
+        opponent_turn += 1
         return pure_random
 
 def strategy_genome(allele: int):
     return tactics[allele]
 
-tactics = [pure_random,gabriele,shortest_row,longest_row,pick_one_from_max,pick_one_from_min,pick_even_max,pick_odd_max]
+#tactics = [pure_random,gabriele,shortest_row,longest_row,pick_one_from_max,pick_one_from_min,pick_even_max,pick_odd_max]
+tactics = [gabriele,shortest_row,longest_row,pick_one_from_max,pick_one_from_min,pick_even_max,pick_odd_max]

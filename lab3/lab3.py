@@ -1,8 +1,8 @@
 import logging
 import random
-from typing import Callable
+from scipy.special import expit as sigmoid
 import nim
-from nim import Nim, Nimply, Strategy
+from nim import Nim, Strategy
 
     #tmp = np.array([tuple(int(x) for x in f"{c:032b}") for c in state.rows])
     #xor = tmp.sum(axis=0) % 2
@@ -17,7 +17,7 @@ def generate_individual(genome: list) -> list:
     dna = list()
     while len(dna) < GENM_SIZE:
         locus = random.randint(0,len(nim.tactics)-1)
-        if random.random() < genome[locus]:
+        if random.random() < sigmoid(genome[locus]):
             dna.append(locus)
     return dna
 
@@ -61,8 +61,11 @@ def evaluate_with_average(strategy: Strategy) -> float:
         player = 0
         i = 0
         while board:
-            opponent = (strategy.move(),nim.opponent_strategy(i))
-            ply = opponent[player](board)
+            if i % 2 != 0:
+                opponent = strategy.move()
+            else:
+                opponent = nim.opponent_strategy()
+            ply = opponent(board)
             board.nimming(ply)
             player = 1 - player
             i+=1
@@ -79,7 +82,8 @@ if __name__ == "__main__":
         results = evaluate_with_average(make_strategy(individual))
         print(results)
         evolve_genome(individual, results, genome)
-    print((x for x in zip(nim.tactics,genome)))
+    for x in zip(nim.tactics,genome):
+        print(x[0].__name__, x[1])
 
 
 
