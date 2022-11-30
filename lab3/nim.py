@@ -1,5 +1,6 @@
 from collections import namedtuple
 from copy import deepcopy
+from typing import Callable
 import random
 
 Nimply = namedtuple("Nimply", "row, num_objects")
@@ -30,6 +31,18 @@ class Nim:
         assert self._rows[row] >= num_objects
         assert self._k is None or num_objects <= self._k
         self._rows[row] -= num_objects
+
+class Strategy:
+    def __init__(self, dna: list) -> None:
+        self._dna = dna
+        self._step = 0
+    
+    def move(self) -> Callable:
+        next_move = self._dna[self._step]
+        self._step += 1
+        if self._step >= len(self._dna):
+            self._step = 0
+        return next_move
 
 
 # Sample (and silly) strategies
@@ -92,12 +105,14 @@ def pick_one_from_min(state: Nim) -> Nimply:
 
 def pick_even_max(state: Nim) -> Nimply:
     data = cook_status(state)
-    row_ = max(data['even_object_rows'], key=lambda x: x[1])
+    info = data['even_object_rows'] if data['even_object_rows'] != [] else data['odd_object_rows']
+    row_ = max(info, key=lambda x: x[1])[0]
     return Nimply(row_, (state.rows[row_]//2)+1)
 
 def pick_odd_max(state: Nim) -> Nimply:
     data = cook_status(state)
-    row_ = max(data['odd_object_rows'], key=lambda x: x[1])
+    info = data['odd_object_rows'] if data['odd_object_rows'] != [] else data['even_object_rows']
+    row_ = max(info, key=lambda x: x[1])[0]
     return Nimply(row_, state.rows[row_]//2)
 
 def opponent_strategy(turn: int):
@@ -107,6 +122,6 @@ def opponent_strategy(turn: int):
         return pure_random
 
 def strategy_genome(allele: int):
-    return strategies[allele]
+    return tactics[allele]
 
-strategies = [pure_random,gabriele,shortest_row,longest_row,pick_one_from_max,pick_one_from_min,pick_even_max,pick_odd_max]
+tactics = [pure_random,gabriele,shortest_row,longest_row,pick_one_from_max,pick_one_from_min,pick_even_max,pick_odd_max]

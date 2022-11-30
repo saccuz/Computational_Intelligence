@@ -2,58 +2,66 @@ import logging
 import random
 from typing import Callable
 import nim
-from nim import Nim, Nimply
+from nim import Nim, Nimply, Strategy
 
     #tmp = np.array([tuple(int(x) for x in f"{c:032b}") for c in state.rows])
     #xor = tmp.sum(axis=0) % 2
     #return int("".join(str(_) for _ in xor), base=2)
 
+NUM_MATCHES = 100
+NIM_SIZE=10
+GENM_SIZE = 4
+EVOL_STEP = .05
+
 def generate_individual(genome: list) -> list:
     dna = list()
-    while len(dna) < 4:
-        locus = random.randint(0,len(nim.strategies))
+    while len(dna) < GENM_SIZE:
+        locus = random.randint(0,len(nim.tactics)-1)
         if random.random() < genome[locus]:
             dna.append(locus)
     return dna
 
-def make_strategy(genome: list) -> Callable:
-    def evolvable(state: Nim) -> Nimply:
-        data = nim.cook_status(state)
+def make_strategy(dna: list) -> Strategy:
+    used_tactics = list()
 
-        if random.random() < genome['p']:
-            ply = Nimply(data['shortest_row'], random.randint(1, state.rows[data['shortest_row']]))
-        else:
-            ply = Nimply(data['longest_row'], random.randint(1, state.rows[data['longest_row']]))
+    for al, _ in zip(dna, range(len(dna))):
+        used_tactics.append(nim.tactics[al])
 
-        return ply
-    return evolvable
+    return Strategy(used_tactics)
 
-NUM_MATCHES = 100
-NIM_SIZE=10
+def evolve_genome(dna: list, results: float, genome: list) -> None:
+    if results >= .5:
+        for loc, _ in zip(dna, range(len(dna))):
+            genome[loc] += EVOL_STEP
+    
+    else:
+        for loc, _ in zip(dna, range(len(dna))):
+            if genome[loc] > 0:
+                genome[loc] -= EVOL_STEP
 
-def evaluate(strategy: Callable) -> float:
-    opponent = (strategy, nim.optimal_strategy)
-    won = 0
+# def evaluate(strategy: Callable) -> float:
+#     opponent = (strategy, nim.optimal_strategy)
+#     won = 0
 
-    for m in range(NUM_MATCHES):
-        nim = Nim(NIM_SIZE)
-        player = 0
-        while nim:
-            ply = opponent[player](nim)
-            nim.nimming(ply)
-            player = 1 - player
-        if player == 1:
-            won += 1
-    return won/NUM_MATCHES
+#     for m in range(NUM_MATCHES):
+#         nim = Nim(NIM_SIZE)
+#         player = 0
+#         while nim:
+#             ply = opponent[player](nim)
+#             nim.nimming(ply)
+#             player = 1 - player
+#         if player == 1:
+#             won += 1
+#     return won/NUM_MATCHES
 
-def evaluate_with_average(strategy: Callable) -> float:
+def evaluate_with_average(strategy: Strategy) -> float:
     won = 0
     for m in range(NUM_MATCHES):
         board = Nim(NIM_SIZE)
         player = 0
         i = 0
         while board:
-            opponent = (strategy,nim.opponent_strategy(i))
+            opponent = (strategy.move(),nim.opponent_strategy(i))
             ply = opponent[player](board)
             board.nimming(ply)
             player = 1 - player
@@ -65,10 +73,18 @@ def evaluate_with_average(strategy: Callable) -> float:
 
 if __name__ == "__main__":
 
-    genome = [0.5]*len(nim.strategies)
+    genome = [.5]*len(nim.tactics)
     for generation in range(100):
         individual = generate_individual(genome)
-    evaluate(make_strategy({'p' : .1}))
+        results = evaluate_with_average(make_strategy(individual))
+        print(results)
+        evolve_genome(individual, results, genome)
+    print((x for x in zip(nim.tactics,genome)))
+
+
+
+
+ #   evaluate(make_strategy({'p' : .1}))
 
 # # (OLD) Oversimplified match
 
