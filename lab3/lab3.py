@@ -61,7 +61,7 @@ def evaluate_with_average(strategy: Strategy) -> float:
     for m in range(NUM_MATCHES):
         board = Nim(NIM_SIZE)
         player = 0
-        i = 0
+        i = random.randint(0,1)
         while board:
             if i % 2 != 0:
                 opponent = strategy.move()
