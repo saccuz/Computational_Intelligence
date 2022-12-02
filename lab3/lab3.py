@@ -6,7 +6,7 @@ from scipy.special import expit as sigmoid
 import nim
 from nim import Nim, Strategy
 
-logging.basicConfig(level=logging.INFO)
+#logging.basicConfig(level=logging.INFO)
 
     #tmp = np.array([tuple(int(x) for x in f"{c:032b}") for c in state.rows])
     #xor = tmp.sum(axis=0) % 2
@@ -68,38 +68,47 @@ def evaluate(player1: Strategy, player2: Strategy) -> float:
             won += 1
     return won/NUM_MATCHES
 
+def print_genome(champion: list) -> None:
+    for x in champion:
+        print(f"  {nim.tactics[x].__name__}")
 
 if __name__ == "__main__":
     mean_ = 0
     win = 0
     lose = 0
-    champion = [0,[]]
+    champion = [0,[]] 
     genome = [.5]*len(nim.tactics)
-    
-    for generation in tqdm(range(GENERATIONS), desc="Playing", ascii=False):
-        individual = generate_individual(genome)
-        results = evaluate(make_strategy(individual), nim.opponent_strategy())
-        if results > champion[0]:
-            champion[1] = individual
-            champion[0] = results
-        logging.debug(results)
-        mean_ += results
-        if results > .5:
-            win += 1
-        else:
-            lose += 1
-        evolve_genome(individual, results, genome)
+    op_strat = ['pure random','gabriele','optimal'] 
+    for turn in range(3):
+        champion = [0,[]]
+        print(op_strat[turn])
+        for generation in tqdm(range(GENERATIONS), desc="Playing", ascii=False):
+            individual = generate_individual(genome)
+            results = evaluate(make_strategy(individual), nim.opponent_strategy(turn))
+            if results > champion[0]:
+                champion[1] = individual
+                champion[0] = results
+            logging.debug(results)
+            mean_ += results
+            if results > .5:
+                win += 1
+            else:
+                lose += 1
+            evolve_genome(individual, results, genome)
+        print_genome(champion[1])
     for x in zip(nim.tactics,genome):
         logging.info(x[0].__name__, x[1])
 
     logging.debug(f"mean: {mean_/GENERATIONS}")
     logging.debug(f"victory: {win/GENERATIONS *100}%")
-    print(f"Champion: {evaluate(make_strategy(champion[1]),nim.opponent_strategy())}")
+    print(f"Champion: {evaluate(make_strategy(champion[1]),nim.opponent_strategy(2))}")
 
     selected = list(map(genome.index, heapq.nlargest(GENM_SIZE, genome)))
-    print(f"Evoluted: {evaluate(make_strategy(selected),nim.opponent_strategy())}")
+    print(f"Evolved: {evaluate(make_strategy(selected),nim.opponent_strategy(2))}")
+    print("Evolved genome:")
+    print_genome(selected)
     tourn = evaluate(make_strategy(selected),make_strategy(champion[1]))
-    print(f"Tournament: evoluted/champion: {tourn}/{1-tourn}")
+    print(f"Tournament: evolved/champion: {tourn}/{1-tourn}")
 
     if tourn > 0.5:
         champion = selected
@@ -107,7 +116,4 @@ if __name__ == "__main__":
         champion = champion[1]
 
     print("Best genome:")
-    for x in champion:
-        print(f"  {nim.tactics[x].__name__}")
-
-
+    print_genome(champion)

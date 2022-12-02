@@ -115,8 +115,13 @@ def pick_odd_max(state: Nim) -> Nimply:
     row_ = max(info, key=lambda x: x)
     return Nimply(row_, state.rows[row_]//2)
 
-def opponent_strategy():
-    return Strategy([pure_random])
+def opponent_strategy(turn: int) -> Strategy:
+    if turn == 2:
+        return Strategy([optimal_strategy])
+    elif turn == 1:
+        return Strategy([gabriele])
+    elif turn == 0: 
+        return Strategy([pure_random])
     #return Strategy([shortest_row, longest_row]) #gabriele, longest_row is better
 
 def strategy_genome(allele: int):
