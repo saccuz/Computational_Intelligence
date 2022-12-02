@@ -116,8 +116,8 @@ def pick_odd_max(state: Nim) -> Nimply:
     return Nimply(row_, state.rows[row_]//2)
 
 def opponent_strategy():
-    #return Strategy([pure_random])
-    return Strategy([shortest_row, longest_row]) #gabriele, longest_row is better
+    return Strategy([pure_random])
+    #return Strategy([shortest_row, longest_row]) #gabriele, longest_row is better
 
 def strategy_genome(allele: int):
     return tactics[allele]

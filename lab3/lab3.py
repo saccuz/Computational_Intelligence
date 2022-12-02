@@ -6,6 +6,8 @@ from scipy.special import expit as sigmoid
 import nim
 from nim import Nim, Strategy
 
+logging.basicConfig(level=logging.INFO)
+
     #tmp = np.array([tuple(int(x) for x in f"{c:032b}") for c in state.rows])
     #xor = tmp.sum(axis=0) % 2
     #return int("".join(str(_) for _ in xor), base=2)
@@ -79,7 +81,8 @@ if __name__ == "__main__":
         results = evaluate(make_strategy(individual), nim.opponent_strategy())
         if results > champion[0]:
             champion[1] = individual
-        logging.info(results)
+            champion[0] = results
+        logging.debug(results)
         mean_ += results
         if results > .5:
             win += 1
@@ -89,11 +92,12 @@ if __name__ == "__main__":
     for x in zip(nim.tactics,genome):
         logging.info(x[0].__name__, x[1])
 
-    logging.info(f"mean: {mean_/GENERATIONS}")
-    print(f"victory: {win/GENERATIONS *100}%")
+    logging.debug(f"mean: {mean_/GENERATIONS}")
+    logging.debug(f"victory: {win/GENERATIONS *100}%")
     print(f"Champion: {evaluate(make_strategy(champion[1]),nim.opponent_strategy())}")
 
     selected = list(map(genome.index, heapq.nlargest(GENM_SIZE, genome)))
+    print(f"Evoluted: {evaluate(make_strategy(selected),nim.opponent_strategy())}")
     tourn = evaluate(make_strategy(selected),make_strategy(champion[1]))
     print(f"Tournament: evoluted/champion: {tourn}/{1-tourn}")
 
