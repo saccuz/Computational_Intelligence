@@ -44,6 +44,21 @@ The one we call "champion" in the end performs very well against the optimal_str
 
 An idea we didn't try to implement yet, is to have rules that are more "situational" as the Professor said in the last lesson, in sense that if the table is in a certain situation then do something, but also trying ourself to play online at nim and thinking about possible situational rules, the only one we thought at the moment is that if the rows are even then leave to the opponent an odd number of rows, or the other way round, but more sophisticated rules could improve better our current algorithm.
 
+## Interesting results
+
+### Evolved common results: 
+              gabriele      - pick_odd_max 
+              gabriele      - pick_even_max       <= BEST ONE FOUND THAT OVERALL WINS almost more than 50% (except vs the optimal opponent) 
+              longest_row   - gabriele 
+              pick_even_max - pick_one_from_max   <= ALSO THIS IS MORE OR LESS GOOD
+              gabriele      - shortest_row        <= THIS IS VERY GOOD WITH THE FIRST TWO OPPONENTS, BUT VERY BAD WITH THE gabriele and optimal  
+              trying with a dna of 3 strategies/rules also pick_even_max - gabriele - longest_row is not that bad
+
+### Champion common results (doing well against the optimal_strategy that uses nim sum): 
+              pick_odd_max  - pick_one_from_min 
+              pick_one_from_max - pick_odd_max 
+
+
 ## Contributors
 
 - [Simone Mascali](https://github.com/vmask25)

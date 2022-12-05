@@ -118,13 +118,3 @@ if __name__ == "__main__":
 
     print("Best genome overall:")
     print_genome(champion)
-
-    #evolved common results:  
-#              gabriele      - pick_odd_max
-#              gabriele      - pick_even_max       <= BEST ONE FOUND THAT OVERALL WINS almost more than 50% (except vs the optimal opponent)
-#              longest_row   - gabriele
-#              pick_even_max - pick_one_from_max   <= ALSO THIS IS MORE OR LESS GOOD
-#              gabriele      - shortest_row        <= THIS IS VERY GOOD WITH THE FIRST TWO OPPONENTS, BUT VERY BAD WITH THE gabriele and optimal 
-    #champion common results: 
-#              pick_odd_max  - pick_one_from_min
-#              pick_one_from_max - pick_odd_max
