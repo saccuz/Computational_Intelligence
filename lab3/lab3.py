@@ -14,6 +14,7 @@ RESULT_TRESH = .3
 EVOL_STEP = .05
 
 def generate_individual(genome: list) -> list:
+    """Randomly take elements of the genome"""
     dna = list()
     while len(dna) < GENM_SIZE:
         locus = random.randint(0,len(nim.tactics)-1)
@@ -22,6 +23,7 @@ def generate_individual(genome: list) -> list:
     return dna
 
 def make_strategy(dna: list) -> Strategy:
+    """Take the corresponding strategies according to dna"""
     used_tactics = list()
 
     for al, _ in zip(dna, range(len(dna))):
@@ -30,6 +32,7 @@ def make_strategy(dna: list) -> Strategy:
     return Strategy(used_tactics)
 
 def evolve_genome(dna: list, results: float, genome: list) -> None:
+    """Increment winning genes while punishing the losing (or not taken) ones"""
     if results >= RESULT_TRESH:
         for i in range(len(genome)):
             if i in dna:
@@ -44,11 +47,12 @@ def evolve_genome(dna: list, results: float, genome: list) -> None:
                 genome[i] += EVOL_STEP
 
 def evaluate(player1: Strategy, player2: Strategy) -> float:
+    """Play 100 matches between 2 players"""
     won = 0
     for m in range(NUM_MATCHES):
         board = Nim(NIM_SIZE)
         player = 0
-        i = random.randint(0,1)
+        i = random.randint(0,1) #randomly select who will begin
         while board:
             if i % 2 != 0:
                 opponent = player1.move()
@@ -64,6 +68,7 @@ def evaluate(player1: Strategy, player2: Strategy) -> float:
     return won/NUM_MATCHES
 
 def print_genome(champion: list) -> None:
+    """Print the tactic name given the index"""
     for x in champion:
         print(f"  {nim.tactics[x].__name__}")
 
@@ -82,7 +87,7 @@ if __name__ == "__main__":
         for generation in tqdm(range(GENERATIONS), desc="Playing", ascii=False):
             individual = generate_individual(genome)
             results = evaluate(make_strategy(individual), nim.opponent_strategy(turn))
-            if results > champion[0]:
+            if results > champion[0]: #update the champion
                 champion[1] = individual
                 champion[0] = results
             logging.debug(results)
