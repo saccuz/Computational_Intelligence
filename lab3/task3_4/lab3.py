@@ -1,9 +1,33 @@
 import random
+import time
 from copy import deepcopy
+
 import nim
 from nim import Nim
 
-NIM_SIZE=3
+NIM_SIZE = 9
+DEPTH = 200000
+dict_size = 0
+num_moves = 0
+
+def statistics(dict_of_states: dict, start: float)-> None:
+    sum = 0
+    for _ in dict_of_states.values():
+        sum += len(_)
+    print(sum)
+    print(len(dict_of_states.keys()))
+
+    end = time.time()
+    print(f"Computational time: {(end - start)//60} mins and {(end-start)-(((end - start)//60)*60)} secs")
+
+def manage_depth():
+    global num_moves, dict_size
+    
+    if dict_size >= DEPTH:
+        num_moves += 1
+        if num_moves == 3:
+            dict_size = 0
+            num_moves = 0
 
 def evaluation(state: Nim) -> int:
     if not state:
@@ -11,63 +35,74 @@ def evaluation(state: Nim) -> int:
     else:
         return 0
 
-def generate_possible_moves(board : Nim, state: dict()) -> None:
-    if board.rows not in state and board:
-        state[board.rows] = list()
+def minMax(state: Nim, dict_of_states: dict()):
+    global dict_size
 
-    possible_moves = [(r, o) for r, c in enumerate(board.rows) for o in range(1, c + 1)]
+    manage_depth()
 
-    for ply in possible_moves:
-        tmp = deepcopy(board)
-        if ply not in state[board.rows]:
-            state[board.rows].append(ply)
-            generate_possible_moves(tmp.nimming(ply),state)
-
-def minMax(state: Nim, dict_of_states:dict(), player:int):
     val = evaluation(state)
     if val != 0:
         return None, val
 
-    moves = dict_of_states[state.rows]
+    # Depth limiting
+    if state and dict_size >= DEPTH:
+        if state.rows not in dict_of_states:
+            return nim.pure_random(state),1
+        else: 
+            return max(dict_of_states[state.rows], key=lambda x: x[1])
+
     results = list()
-    
-    for ply in moves:
-        tmp = deepcopy(state)
-        _ , val = minMax(tmp.nimming(ply), dict_of_states, 1-player)
-        results.append((ply, -val))
-        
+
+    if state.rows not in dict_of_states and state:
+        dict_of_states[state.rows] = list()
+        dict_size+=1
+
+        for ply in [(len(state.rows)-1-r, o) for r, c in enumerate(reversed(state.rows)) for o in range(1, c + 1)]: #used "list comprehension" for optimization
+            dict_of_states[state.rows].append((ply,-1))
+
+            tmp_state = deepcopy(state)
+            _ , val = minMax(tmp_state.nimming(ply), dict_of_states)
+            results.append((ply, -val))
+
+            if -val == 1: #alpha-beta pruning
+                dict_of_states[state.rows] = [(ply,-val)]
+                break
+    else:
+        return max(dict_of_states[state.rows], key=lambda x: x[1])  
+
     return max(results, key=lambda x: x[1])
 
 if __name__ == "__main__":
-    # try:
-    board = Nim(NIM_SIZE)
-    dict_of_states = dict()
-    generate_possible_moves(board, dict_of_states)
-    sum = 0
-    for _ in dict_of_states.values():
-        sum += len(_)
-    print(sum)
-    print(len(dict_of_states.keys()))
+    start = time.time()
+    try:
+        dict_of_states = dict()
+        i = random.randint(0,1)
+        print(f"Player: {1-i}")
+        board = Nim(NIM_SIZE)
+        player2 = nim.opponent_strategy()
 
-    # except KeyboardInterrupt:
-    #     sum = 0
-    #     for _ in dict_of_states.values():
-    #         sum = sum + len(_)
-    #     print(len(dict_of_states.keys()))
-    i = random.randint(0,1)
-    player2 = nim.opponent_strategy()
-    while board:
-        if i % 2 != 0:
-            ply, _ = minMax(board, dict_of_states, 1)
-            player = 0
+        print(board)
+
+        while board:
+            if i % 2 != 0:
+                player = 0
+                ply, _ = minMax(board, dict_of_states)
+            else:
+                player = 1
+                opponent = player2.move()
+                ply = opponent(board)
+            
+            board.nimming(ply)
+            i+=1
+
+            print(board)
+
+        if player == 1:
+            print("YOU LOSE")
         else:
-            opponent = player2.move()
-            ply = opponent(board)
-            player = 1
-        board.nimming(ply)
-        i+=1
-    if player == 1:
-        print("YOU LOSE")
-    else:
-        print("YOU WIN")
+            print("YOU WIN")
+        
+        statistics(dict_of_states, start)
 
+    except KeyboardInterrupt: #for debug purpose
+        statistics(dict_of_states, start)
