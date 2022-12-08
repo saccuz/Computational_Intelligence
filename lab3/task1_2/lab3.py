@@ -3,7 +3,7 @@ import random
 import heapq
 from tqdm import tqdm
 from scipy.special import expit as sigmoid
-import nim
+import nim as nim
 from nim import Nim, Strategy
 
 #logging.basicConfig(level=logging.INFO)
