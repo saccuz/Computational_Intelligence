@@ -5,7 +5,7 @@ from copy import deepcopy
 import nim
 from nim import Nim
 
-NIM_SIZE = 9
+NIM_SIZE = 16
 DEPTH = 200000
 dict_size = 0
 num_moves = 0
@@ -37,8 +37,6 @@ def evaluation(state: Nim) -> int:
 
 def minMax(state: Nim, dict_of_states: dict()):
     global dict_size
-
-    manage_depth()
 
     val = evaluation(state)
     if val != 0:
@@ -87,6 +85,7 @@ if __name__ == "__main__":
             if i % 2 != 0:
                 player = 0
                 ply, _ = minMax(board, dict_of_states)
+                manage_depth()
             else:
                 player = 1
                 opponent = player2.move()
