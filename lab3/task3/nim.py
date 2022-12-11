@@ -56,6 +56,11 @@ def pure_random(state: Nim) -> Nimply:
     num_objects = random.randint(1, state.rows[row])
     return Nimply(row, num_objects)
 
+def gabriele(state: Nim) -> Nimply:
+    """Pick always the maximum possible number of the lowest row"""
+    possible_moves = [(r, o) for r, c in enumerate(state.rows) for o in range(1, c + 1)]
+    return Nimply(*max(possible_moves, key=lambda m: (-m[0], m[1])))
+
 # Opponent strategy generator (based on the evolution turn)
 def opponent_strategy() -> Strategy:
     return Strategy([optimal_strategy])
