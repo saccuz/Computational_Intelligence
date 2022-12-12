@@ -20,7 +20,7 @@ After every **episode** we perform an evaluation phase in which we made the agen
 During the train phase we keep the best individual based on the evaluation.
 
 Ended the training phase, we evaluate the best individual against the opponent, to test the best player obtained from the algorithm. \
-To keep the agent as general as possible, we use _ply_ as the state.
+Given that Reinforcement Learning is extremely problem specific, we decide to use _ply_ as the state, in order to maximize the effectiveness of the algorithm, giving up generalization capability.
 
 ## Results
 The trained agent is able to easily defeat various strategies, with good winning rates. \
