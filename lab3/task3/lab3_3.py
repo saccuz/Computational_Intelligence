@@ -6,7 +6,7 @@ import nim
 from nim import Nim
 
 # This size can be brought up to 16 with a reasonable response time
-NIM_SIZE = 11
+NIM_SIZE = 9
 # This depth limit can be changed to 100000 or 150000 to speed up the minmax response (with winning rate disadvantages)
 DEPTH = 200000
 
